@@ -16,6 +16,8 @@ use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
 use crate::shared::{shared_config, SharedPlugin, SERVER_REPLICATION_INTERVAL};
 
+use super::messages::SendTroopsMessage;
+
 pub(crate) const SERVER_ADDR: SocketAddr = SocketAddr::new(IpAddr::V4(Ipv4Addr::LOCALHOST), 5000);
 
 pub struct ExampleServerPlugin;
@@ -66,10 +68,17 @@ impl Plugin for ExampleServerPlugin {
 
         // add our server-specific logic. Here we will just start listening for incoming connections
         app.add_systems(Startup, start_server);
+        app.add_systems(Update, received_send_troops_message);
     }
 }
 
 /// Start the server
 fn start_server(mut commands: Commands) {
     commands.start_server();
+}
+
+fn received_send_troops_message(mut messages: EventReader<SendTroopsMessage>) {
+    for message in messages.read() {
+        info!("Received SendTroopsMessage: {:?}", message);
+    }
 }

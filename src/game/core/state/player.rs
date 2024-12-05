@@ -1,9 +1,10 @@
-pub type PlayerId = u8;
+use serde::{Deserialize, Serialize};
 
-pub struct Player(Option<PlayerId>);
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct Player(Option<u8>);
 
 impl Player {
-    pub fn new(player: Option<PlayerId>) -> Self {
+    pub fn new(player: Option<u8>) -> Self {
         Player(player)
     }
 
@@ -11,10 +12,10 @@ impl Player {
         Player(None)
     }
 
-    pub fn id(&self) -> Option<PlayerId> {
+    pub fn id(&self) -> Option<u8> {
         self.0
     }
-    pub fn set_id(&mut self, id: PlayerId) {
+    pub fn set_id(&mut self, id: u8) {
         self.0 = Some(id)
     }
 

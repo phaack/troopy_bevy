@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 use bevy::render::primitives::Aabb;
 
+use crate::game::core::interaction::actions::SendTroopsAction;
+use crate::game::core::state::player::Player;
 use crate::game::core::structures::structure::Structure;
+use crate::messages::{SendTroopsMessage, UpgradeStructureMessage};
 
 /// Resource to keep track of the drag state
 #[derive(Default, Resource)]
@@ -20,9 +23,9 @@ impl Plugin for StructureInteractionPlugin {
         app.add_systems(
             Update,
             (
-                mouse_button_input,
-                mouse_move_system,
-                mouse_button_up_system,
+                mouse_interaction_start,
+                mouse_interaction_move,
+                mouse_interaction_end,
             ),
         );
     }
@@ -52,7 +55,7 @@ fn point_in_aabb(point: Vec3, transform: &Transform, aabb: &Aabb) -> bool {
 }
 
 /// System to handle mouse button down events
-fn mouse_button_input(
+fn mouse_interaction_start(
     buttons: Res<ButtonInput<MouseButton>>,
     windows: Query<&Window>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
@@ -87,7 +90,7 @@ fn mouse_button_input(
 }
 
 /// System to handle mouse movement and hovering over structures during dragging
-fn mouse_move_system(
+fn mouse_interaction_move(
     windows: Query<&Window>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     structures: Query<(Entity, &Transform, &Aabb), With<Structure>>,
@@ -125,9 +128,11 @@ fn mouse_move_system(
 }
 
 /// System to handle mouse button up events and finalize the drag operation
-fn mouse_button_up_system(
+fn mouse_interaction_end(
     buttons: Res<ButtonInput<MouseButton>>,
     mut drag_state: ResMut<DragState>,
+    mut send_troops_event: EventWriter<SendTroopsMessage>,
+    mut upgrade_structure_event: EventWriter<UpgradeStructureMessage>,
 ) {
     if buttons.just_released(MouseButton::Left) && drag_state.is_dragging {
         drag_state.is_dragging = false;
@@ -137,8 +142,14 @@ fn mouse_button_up_system(
             // React to drag from start_entity to end_entity
             if let Some(end_entity) = end_entity {
                 info!("Dragged from {:?} to {:?}", start_entity, end_entity);
+                // send troops event
+                send_troops_event.send(SendTroopsMessage {
+                    player: Player::new(Some(0)),
+                    action: SendTroopsAction::default(&start_entity, &end_entity),
+                });
             } else {
                 info!("Dragged from {:?} to empty space", start_entity);
+                // upgrade structure event
             }
             // with all entities in the path
             info!(

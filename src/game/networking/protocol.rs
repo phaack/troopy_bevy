@@ -16,6 +16,8 @@ use serde::{Deserialize, Serialize};
 use lightyear::client::components::ComponentSyncMode;
 use lightyear::prelude::*;
 
+use super::messages::{SendTroopsMessage, UpgradeStructureMessage, UseTavernMessage};
+
 // Player
 #[derive(Bundle)]
 pub(crate) struct PlayerBundle {
@@ -53,13 +55,7 @@ impl MapEntities for PlayerParent {
 pub struct GameChannel;
 
 // Messages
-// #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-// pub struct SendTroopsMessage {
-//     pub start_structure: Entity,
-//     pub end_structure: Entity,
-//     pub troop_type: TroopType,
-//     pub troop_amount: u8,
-// }
+
 //
 // #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 // pub enum Inputs {
@@ -73,10 +69,10 @@ pub(crate) struct ProtocolPlugin;
 impl Plugin for ProtocolPlugin {
     fn build(&self, app: &mut App) {
         // messages
-        // app.register_message::<SendTroopsMessage>(ChannelDirection::ClientToServer);
+        app.register_message::<SendTroopsMessage>(ChannelDirection::ClientToServer);
+        app.register_message::<UseTavernMessage>(ChannelDirection::ClientToServer);
+        app.register_message::<UpgradeStructureMessage>(ChannelDirection::ClientToServer);
 
-        // inputs what does this do?
-        // app.add_plugins(InputPlugin::<Actions>::default());
         // components
         app.register_component::<PlayerId>(ChannelDirection::ServerToClient)
             .add_prediction(ComponentSyncMode::Once)
