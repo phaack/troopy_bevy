@@ -69,6 +69,7 @@ pub(crate) struct ProtocolPlugin;
 impl Plugin for ProtocolPlugin {
     fn build(&self, app: &mut App) {
         // messages
+        //
         app.register_message::<SendTroopsMessage>(ChannelDirection::ClientToServer);
         app.register_message::<UseTavernMessage>(ChannelDirection::ClientToServer);
         app.register_message::<UpgradeStructureMessage>(ChannelDirection::ClientToServer);
