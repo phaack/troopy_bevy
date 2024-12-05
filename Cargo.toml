@@ -1,0 +1,20 @@
+[package]
+name = "troopy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.14.0"
+bevy_mod_picking = "0.20.1"
+lightyear = "0.17.1"
+serde = { version = "1.0.215", features = ["derive"] }
+clap = { version = "4.5.22", features = ["derive"] }
+leafwing-input-manager = "0.15.1"
+
+# Enable a small amount of optimization in debug mode
+[profile.dev]
+opt-level = 1
+
+# Enable high optimizations for dependencies (incl. Bevy), but not for our code:
+[profile.dev.package."*"]
+opt-level = 3
