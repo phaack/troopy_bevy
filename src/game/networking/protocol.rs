@@ -35,33 +35,10 @@ impl PlayerBundle {
 #[derive(Component, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct PlayerId(ClientId);
 
-// Example of a component that contains an entity.
-// This component, when replicated, needs to have the inner entity mapped from the Server world
-// to the client World.
-// You will need to derive the `MapEntities` trait for the component, and register
-// app.add_map_entities<PlayerParent>() in your protocol
-#[derive(Component, Deserialize, Serialize, Clone, Debug, PartialEq)]
-pub struct PlayerParent(Entity);
-
-impl MapEntities for PlayerParent {
-    fn map_entities<M: EntityMapper>(&mut self, entity_mapper: &mut M) {
-        self.0 = entity_mapper.map_entity(self.0);
-    }
-}
-
 // Channels
 //
 #[derive(Channel)]
 pub struct GameChannel;
-
-// Messages
-
-//
-// #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-// pub enum Inputs {
-//     SendTroops((PlayerId, u8)),
-//     None,
-// }
 
 // Protocol
 pub(crate) struct ProtocolPlugin;

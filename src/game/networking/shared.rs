@@ -3,8 +3,11 @@ use bevy::prelude::*;
 use bevy::render::RenderPlugin;
 use bevy::utils::Duration;
 
-use lightyear::prelude::*;
 use lightyear::shared::config::Mode;
+use lightyear::{prelude::*, shared::events::components::MessageEvent};
+
+use super::messages::{SendTroopsMessage, UpgradeStructureMessage, UseTavernMessage};
+use super::protocol::GameChannel;
 
 pub const FIXED_TIMESTEP_HZ: f64 = 64.0;
 
@@ -25,20 +28,17 @@ pub fn shared_config() -> SharedConfig {
 #[derive(Clone)]
 pub struct SharedPlugin;
 
-#[derive(Channel)]
-pub struct Channel1;
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub struct Message1(pub usize);
-
 impl Plugin for SharedPlugin {
     fn build(&self, app: &mut App) {
         // Register your protocol, which is shared between client and server
-        app.register_message::<Message1>(ChannelDirection::Bidirectional);
-        app.add_channel::<Channel1>(ChannelSettings {
+        app.add_channel::<GameChannel>(ChannelSettings {
             mode: ChannelMode::OrderedReliable(ReliableSettings::default()),
             ..default()
         });
+
+        app.add_event::<MessageEvent<SendTroopsMessage>>();
+        app.add_event::<MessageEvent<UseTavernMessage>>();
+        app.add_event::<MessageEvent<UpgradeStructureMessage>>();
 
         if app.is_plugin_added::<RenderPlugin>() {
             app.add_systems(Startup, init);
@@ -47,4 +47,3 @@ impl Plugin for SharedPlugin {
 }
 
 fn init(mut commands: Commands) {}
-

@@ -11,6 +11,7 @@ use bevy::prelude::*;
 use bevy::state::app::StatesPlugin;
 use lightyear::prelude::server::*;
 use lightyear::prelude::*;
+use lightyear::shared::events::components::MessageEvent;
 use lightyear::shared::log::add_log_layer;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
@@ -69,6 +70,7 @@ impl Plugin for ExampleServerPlugin {
         // add our server-specific logic. Here we will just start listening for incoming connections
         app.add_systems(Startup, start_server);
         app.add_systems(Update, received_send_troops_message);
+        // app.add_event::<MessageEvent<SendTroopsMessage>>();
     }
 }
 
@@ -77,7 +79,7 @@ fn start_server(mut commands: Commands) {
     commands.start_server();
 }
 
-fn received_send_troops_message(mut messages: EventReader<SendTroopsMessage>) {
+fn received_send_troops_message(mut messages: EventReader<MessageEvent<SendTroopsMessage>>) {
     for message in messages.read() {
         info!("Received SendTroopsMessage: {:?}", message);
     }
