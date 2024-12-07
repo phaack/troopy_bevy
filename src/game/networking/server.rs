@@ -79,8 +79,8 @@ fn start_server(mut commands: Commands) {
     commands.start_server();
 }
 
-fn received_send_troops_message(mut messages: EventReader<MessageEvent<SendTroopsMessage>>) {
-    for message in messages.read() {
-        info!("Received SendTroopsMessage: {:?}", message);
+fn received_send_troops_message(mut events: EventReader<MessageEvent<SendTroopsMessage>>) {
+    for event in events.read() {
+        println!("Received SendTroopsMessage: {:?}", event.message);
     }
 }

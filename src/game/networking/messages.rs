@@ -11,7 +11,7 @@ use crate::game::core::{
 
 use super::protocol::PlayerId;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Event)]
+#[derive(Serialize, Deserialize,Debug, PartialEq, Clone, Event)]
 pub struct SendTroopsMessage {
     pub player: Player,
     pub action: SendTroopsAction,

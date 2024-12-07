@@ -1,11 +1,12 @@
 use bevy::prelude::*;
 use bevy::render::primitives::Aabb;
-use lightyear::prelude::{ClientMessageEvent, ServerMessageEvent};
+use lightyear::prelude::{ClientConnectionManager, ClientMessageEvent, NetworkTarget, ServerMessageEvent};
 use lightyear::shared::events::components::MessageEvent;
 
 use crate::game::core::interaction::actions::SendTroopsAction;
 use crate::game::core::state::player::Player;
 use crate::game::core::structures::structure::Structure;
+use crate::game::networking::protocol::GameChannel;
 use crate::messages::{SendTroopsMessage, UpgradeStructureMessage, UseTavernMessage};
 
 /// Resource to keep track of the drag state
@@ -136,8 +137,7 @@ fn mouse_interaction_move(
 fn mouse_interaction_end(
     buttons: Res<ButtonInput<MouseButton>>,
     mut drag_state: ResMut<DragState>,
-    mut send_troops_event: EventWriter<MessageEvent<SendTroopsMessage>>,
-    mut upgrade_structure_event: EventWriter<MessageEvent<UpgradeStructureMessage>>,
+    mut connection: ResMut<ClientConnectionManager>
 ) {
     if buttons.just_released(MouseButton::Left) && drag_state.is_dragging {
         drag_state.is_dragging = false;
@@ -148,18 +148,16 @@ fn mouse_interaction_end(
             if let Some(end_entity) = end_entity {
                 info!("Dragged from {:?} to {:?}", start_entity, end_entity);
                 // send troops event
-                send_troops_event.send(MessageEvent::<SendTroopsMessage> {
-                    message: SendTroopsMessage {
-                        player: Player::new(Some(0)),
-                        action: SendTroopsAction::default(&start_entity, &end_entity),
-                    },
-                    context: (),
-                });
+                let mut msg = SendTroopsMessage {
+                    action: SendTroopsAction::default(&start_entity, &end_entity),
+                    player: Player::new(Some(1)),
+                };
+                let _ = connection.send_message::<GameChannel, SendTroopsMessage>(&mut msg);
             }
-            // } else {
-            //     info!("Dragged from {:?} to empty space", start_entity);
-            //     // upgrade structure event
-            // }
+            } else {
+                // info!("Dragged from {:?} to empty space", start_entity);
+                // upgrade structure event
+            }
             // with all entities in the path
             info!(
                 "Entities in the path: {:?}",
@@ -169,7 +167,6 @@ fn mouse_interaction_end(
                     .map(|entity| entity.to_string())
                     .collect::<Vec<String>>(),
             );
-        }
 
         // Reset drag_state
         drag_state.start_entity = None;
