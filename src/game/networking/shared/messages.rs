@@ -2,6 +2,7 @@
 
 use bevy::prelude::Event;
 use lightyear::prelude::*;
+use lightyear::protocol::EventContext;
 use serde::{Deserialize, Serialize};
 
 use crate::game::core::{
@@ -9,9 +10,7 @@ use crate::game::core::{
     state::player::Player,
 };
 
-use super::protocol::PlayerId;
-
-#[derive(Serialize, Deserialize,Debug, PartialEq, Clone, Event)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Event)]
 pub struct SendTroopsMessage {
     pub player: Player,
     pub action: SendTroopsAction,

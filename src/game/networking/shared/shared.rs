@@ -4,9 +4,8 @@ use bevy::render::RenderPlugin;
 use bevy::utils::Duration;
 
 use lightyear::shared::config::Mode;
-use lightyear::{prelude::*, shared::events::components::MessageEvent};
+use lightyear::prelude::*;
 
-use super::messages::{SendTroopsMessage, UpgradeStructureMessage, UseTavernMessage};
 use super::protocol::GameChannel;
 
 pub const FIXED_TIMESTEP_HZ: f64 = 64.0;
@@ -35,10 +34,6 @@ impl Plugin for SharedPlugin {
             mode: ChannelMode::OrderedReliable(ReliableSettings::default()),
             ..default()
         });
-
-        app.add_event::<MessageEvent<SendTroopsMessage>>();
-        app.add_event::<MessageEvent<UseTavernMessage>>();
-        app.add_event::<MessageEvent<UpgradeStructureMessage>>();
 
         if app.is_plugin_added::<RenderPlugin>() {
             app.add_systems(Startup, init);

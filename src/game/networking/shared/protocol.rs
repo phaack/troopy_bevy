@@ -16,43 +16,25 @@ use serde::{Deserialize, Serialize};
 use lightyear::client::components::ComponentSyncMode;
 use lightyear::prelude::*;
 
-use super::messages::{SendTroopsMessage, UpgradeStructureMessage, UseTavernMessage};
+use crate::game::core::structures::structure::Structure;
 
-// Player
-#[derive(Bundle)]
-pub(crate) struct PlayerBundle {
-    id: PlayerId,
-}
-
-impl PlayerBundle {
-    pub(crate) fn new(id: ClientId) -> Self {
-        // Generate pseudo random color from client id.
-        Self { id: PlayerId(id) }
-    }
-}
-
-// Components
-#[derive(Component, Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub struct PlayerId(ClientId);
-
+use crate::game::networking::shared::messages::{SendTroopsMessage, UpgradeStructureMessage, UseTavernMessage};
 // Channels
-//
 #[derive(Channel)]
 pub struct GameChannel;
 
 // Protocol
-pub(crate) struct ProtocolPlugin;
+pub(crate) struct GameProtocolPlugin;
 
-impl Plugin for ProtocolPlugin {
+impl Plugin for GameProtocolPlugin {
     fn build(&self, app: &mut App) {
         // messages
-        //
-        app.register_message::<SendTroopsMessage>(ChannelDirection::ClientToServer);
+        app.register_message::<SendTroopsMessage>(ChannelDirection::Bidirectional);
         app.register_message::<UseTavernMessage>(ChannelDirection::ClientToServer);
         app.register_message::<UpgradeStructureMessage>(ChannelDirection::ClientToServer);
 
         // components
-        app.register_component::<PlayerId>(ChannelDirection::ServerToClient)
+        app.register_component::<Structure>(ChannelDirection::Bidirectional)
             .add_prediction(ComponentSyncMode::Once)
             .add_interpolation(ComponentSyncMode::Once);
 

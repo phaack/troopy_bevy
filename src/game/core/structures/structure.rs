@@ -1,10 +1,11 @@
 use bevy::prelude::*;
+use serde::{Deserialize, Serialize};
 
 use crate::game::core::state::player::Player;
 
 pub type ResourceType = u16;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum StructureType {
     BaseTower,
     RegularTower,
@@ -12,12 +13,13 @@ pub enum StructureType {
     GoldMine,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct StructureLevelData {
     pub max_resources: ResourceType,
     pub resource_generatrion_rate: ResourceType,
 }
 
-#[derive(Component)]
+#[derive(Component, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Structure {
     pub owner: Player,
     pub structure_type: StructureType,

@@ -12,8 +12,8 @@ mod game;
 use game::networking::*;
 use bevy::prelude::*;
 use clap::Parser;
-use crate::game::networking::client::ExampleClientPlugin;
-use crate::game::networking::server::ExampleServerPlugin;
+use crate::game::networking::client::game_client::GameClientPlugin;
+use crate::game::networking::server::game_server::GameServerPlugin;
 
 #[derive(Parser, PartialEq, Debug)]
 pub enum Cli {
@@ -27,8 +27,8 @@ fn main() {
     let cli = Cli::parse();
     let mut app = App::new();
     match cli {
-        Cli::Server => app.add_plugins(ExampleServerPlugin),
-        Cli::Client => app.add_plugins(ExampleClientPlugin),
+        Cli::Server => app.add_plugins(GameServerPlugin),
+        Cli::Client => app.add_plugins(GameClientPlugin),
     };
     app.run();
 }

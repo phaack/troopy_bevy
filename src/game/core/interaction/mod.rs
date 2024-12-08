@@ -1,2 +1,2 @@
 pub mod actions;
-pub mod ui;
+pub mod structure_interaction;
